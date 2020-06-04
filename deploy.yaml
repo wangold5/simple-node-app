@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: www
+      app: node-demo
+  template:
+    metadata:
+      labels:
+        project: www
+        app: node-demo
+    spec:
+      containers:
+      - image: $IMAGE_NAME
+        name: node-demo
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: node-demo
+  name: node-demo
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 31063
+  selector:
+    app: node-demo
+  type: NodePort
